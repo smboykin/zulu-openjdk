@@ -14,6 +14,12 @@ node {
         sh "docker build -t ${imageName} --build-arg BASE_IMAGE=${baseImageName} ./alpine/8-latest/"
         image = docker.image(imageName);
     }
+    stage('Test JDK') {
+        image.inside() {
+            sh "javac -version"
+            sh 'echo "JDK test successful"'
+        }
+    }
     stage('Push image') {
         docker.withRegistry("https://${targetRegistry}", 'jenkins-chip-repo') {
             image.push()
@@ -21,4 +27,5 @@ node {
             image.push("${imageMinorVersion}")
         }
     }
+
 }
